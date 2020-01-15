@@ -1,30 +1,37 @@
-package LinkedList_A1;
+package A6_Dijkstra;
 
-public class Node { //this is the Node object, these are the Objects in the list
-  public double data;
-  public Node next; //links this node to the next Node in the List
-  public Node prev; //links this node to the preceeding Node in the List (ie this Node is the prev Node's next node)
-  public Node(double data){
-    this.data=data;
-    this.next=null;
-    this.prev=null;
-  }
-  public String toString(){
-    return "data: "+data+"\thasNext: "+(next!=null)+"\t\thasPrev: "+(prev!=null);
-  }
-  
-    Below are "getters" for our testing purposes.
-  
-  public boolean isNode(){
-    return true;
-  }
-  public double getData(){
-    return data;
-  }
-  public Node getNext(){
-    return next;
-  }
-  public Node getPrev(){
-    return prev;
-  }
+import java.util.ArrayList;
+import java.util.ListIterator;
+import java.util.concurrent.ConcurrentHashMap;
+
+public class Node {
+	long idNum;
+	String label;
+	long numInDegrees = 0;
+	ArrayList<Edge> outEdges;
+	ArrayList<Edge> inEdges;
+	boolean knownDist;
+	int currCheapestPath = 0;
+	Node prevNode;
+	
+	public Node(long idNum, String label) {
+		this.idNum = idNum;
+		this.label = label;
+		this.outEdges = new ArrayList< Edge>();
+		this.inEdges = new ArrayList< Edge>();
+		this.knownDist = false;
+	}
+	
+	public long getIdNum() {
+		return idNum;
+	}
+	
+	public String getLabel() {
+		return label;
+	}
+	
+	public long getNumInDegrees() {
+		return numInDegrees;
+	}
+	
 }

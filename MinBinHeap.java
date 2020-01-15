@@ -1,161 +1,97 @@
-package MinBinHeap_A3;
+package A6_Dijkstra;
 
 public class MinBinHeap implements Heap_Interface {
-  private EntryPair[] array; //load this array
-  private int size;
-  private static final int arraySize = 10000; 
 
-  public MinBinHeap() {
-    this.array = new EntryPair[arraySize];
-    array[0] = new EntryPair(null, -100000);
-  }
+    private EntryPair[] array; //load this array
+    private int size;
+    private static final int arraySize = 10000;
+
+    public MinBinHeap() {
+        this.array = new EntryPair[arraySize];
+        array[0] = new EntryPair(null, -100000);
+    }
     
-  @Override
-  public EntryPair[] getHeap() { 
-    return this.array;
-  }
-
-@Override
-public void insert(EntryPair entry) {
-	
-
-	array[size+1] = entry;
-	bubbleUp(size+1);
-	size++;
-	
-}
-
-
-
-@Override
-public void delMin() {
-	// if leaf fits into root
-	if (size == 1) {
-		size--;
-		return;
-	}
-	if (array[size].getPriority() < array[2].getPriority() &&
-		array[size].getPriority() < array[3].getPriority()) {
-		array[1] = array[size];
-		array[size] = null;
-		size--;
-		return;
-	} else {
-	array[1] = array[size];
-	size--;
-	bubbleDown(1);
+	@Override
+	public EntryPair[] getHeap() {
+		return this.array;
 	}
 	
-	
-}
-
-@Override
-public EntryPair getMin() {
-	if (size() == 0) {
-		return null;
+	@Override
+	public void insert(EntryPair entry) {
+        array[size()+1] = entry;
+        bubbleUp(size()+1);
+        size++;
 	}
+
+	@Override
+	public void delMin() {
+        if (array[1] != null) {
+            if (array[2] == null) array[1] = null;
+            array[1] = array[size()];
+            array[size()] = null;
+            if (array[2] != null) bubbleDown(1);
+            size--;
+        }
+		
+	}
+
+	@Override
+	public EntryPair getMin() {
 		return array[1];
-
-}
-
-@Override
-public int size() {
-	if (size == 0) {
-		return 0;
 	}
-	return size;
-}
 
-@Override
-public void build(EntryPair[] entries) {
-	size = entries.length;
-	for (int i = 0; i < entries.length; i++) {
-		array[i+1] = entries[i];	
+	@Override
+	public int size() {
+		return size;
 	}
-	for (int i = size/2; i > 0; i--) {
-		bubbleDown(i);
-	}
-}
 
-private void bubbleUp(int index) {	
-	if (index < 2) { //base case, can't bubble up if index is < 2
-		return;
+	@Override
+	public void build(EntryPair[] entries) {
+        int idx = 0;
+        while (idx < entries.length && entries[idx] != null) {
+            array[idx+1] = entries[idx];
+            size++;
+            idx++;
+        }
+        for (int i = size() / 2; i > 0; i--) bubbleDown(i);
 	}
-	EntryPair temp = new EntryPair("", 0);
-		if (array[index/2].getPriority() > array[index].getPriority()) { //then swap
-				temp = array[index/2]; //temp = parent
-				array[index/2] = array[index]; //parent = current
-				array[index] = temp; //current = temp
-			}
-		bubbleUp(index/2);
-		return;
-
-}
 	
+	
+	
+    private void bubbleUp(int idx) {
+        int par = getParent(idx);
+        if (array[idx].getPriority() < array[par].getPriority()) {
+            EntryPair tmp = array[par];
+            array[par] = array[idx];
+            array[idx] = tmp;
+            if (par != 1) bubbleUp(par);
+        }
+    }
+
+    private void bubbleDown(int idx) {
+        int swp = getLeft(idx);
+        if(swp>9999)return;
+        if (array[getRight(idx)] != null && array[getRight(idx)].getPriority() < array[swp].getPriority())
+            swp = getRight(idx);
+        if (array[idx].getPriority() > array[swp].getPriority()) {
+            EntryPair tmp = array[swp];
+            array[swp] = array[idx];
+            array[idx] = tmp;
+            if (getLeft(swp)<9999&& array[getLeft(swp)] != null) bubbleDown(swp);
+        }
+    }
+    
+    private int getParent(int i) {
+        return i/2;
+    }
+
+    private int getLeft(int i) {
+        return 2*i;
+    }
+
+    private int getRight(int i) {
+        return 2*i+1;
+    }
 
 
-private void bubbleDown(int index) {
-	EntryPair temp = new EntryPair("", 0);
-	//if node at index has no children, return
-	if (index * 2 > size) {
-		return;
-	}//if there is a left child but not a right child, and if priority of node at index
-	 // is higher than the left child
-	if (index * 2 <= size  && index*2 + 1 > size) {
-		if (array[index].getPriority() < array[index*2].getPriority()) {
-			return;
-		}else {//if there is a left child but not a right child, and priority of node
-			//at index is lower than left child
-			temp = array[index];
-			array[index] = array[index*2];
-			array[index*2] = temp;
-			return;
-		}
-	}
-	//if priority of node at index is higher than both children, don't bubble down and return.
-	if (array[index].getPriority() < array[index*2].getPriority() &&
-		array[index].getPriority() < array[index*2 + 1].getPriority()) {
-		return;
-	}
-		
-		
-		//if left child is higher priority than right child
-		if (array[index*2].getPriority() < array[index*2 + 1].getPriority()) {
-			temp = array[index];
-			array[index] = array[index*2];
-			array[index*2] = temp;
-			bubbleDown(index*2);
-			return;
-		} //if right child is higher priority than left child
-		else if (array[index*2].getPriority() > array[index*2 + 1].getPriority()) {
-			temp = array[index];
-			array[index] = array[index*2 + 1];
-			array[index*2 + 1] = temp;
-			bubbleDown(index*2+1);
-			return;
-		}
-}
-
-private int getLeftChildIndex(int currentIndex) {
-	return 2 * currentIndex;
-}
-
-private int getRightChildIndex(int currentIndex) {
-	return 2 * currentIndex + 1;
-}
-
-private int getParentIndex(int currentIndex) {
-	return (currentIndex) / 2;
-}
-
-private String getParentValue(int parentPriority) {
-	EntryPair entry = new EntryPair("", 0);
-	entry.priority = parentPriority;
-	for (int i = 0; i < array.length; i++) {
-		if (array[i].getPriority() == parentPriority) {
-			entry.value = array[i].getValue();
-		}
-	}
-	return entry.getValue();
-}
 }
